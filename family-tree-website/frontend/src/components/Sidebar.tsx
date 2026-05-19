@@ -100,7 +100,7 @@ const Sidebar: React.FC<{ activeTab: string; setActiveTab: (tab: string) => void
       </div>
 
       <div className="p-6 border-t border-heritage-darkRed text-center text-xs text-heritage-gold/60 font-medium">
-        © 2026 Gia Phả Đại Việt
+        Create By Đặng Quyền
       </div>
     </div>
   );
