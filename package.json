@@ -2,6 +2,7 @@
   "name": "ecc-universal",
   "version": "2.0.0-rc.1",
   "description": "Complete collection of battle-tested Claude Code configs — agents, skills, hooks, rules, and legacy command shims evolved over 10+ months of intensive daily use by an Anthropic hackathon winner",
+  "type": "module",
   "publishConfig": {
     "access": "public"
   },
@@ -326,17 +327,25 @@
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "ajv": "^8.18.0",
-    "sql.js": "^1.14.1"
+    "axios": "^1.16.1",
+    "lowdb": "^7.0.1",
+    "sql.js": "^1.14.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@opencode-ai/plugin": "^1.0.0",
     "@types/node": "^25.8.0",
+    "autoprefixer": "^10.5.0",
     "c8": "^11.0.0",
     "eslint": "^9.39.2",
     "globals": "^17.4.0",
     "markdownlint-cli": "^0.48.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
   },
   "engines": {

@@ -1,0 +1,20 @@
+{
+  "members": [
+    {
+      "id": "13828a27-b594-4ce0-b653-92a346bf9648",
+      "firstName": "Nguyễn",
+      "lastName": "Văn A",
+      "birthDate": "1980-01-01",
+      "gender": "Male"
+    },
+    {
+      "id": "16d87e90-3ea0-463a-a6c5-c3cbebfa4716",
+      "firstName": "adf",
+      "lastName": "fd",
+      "birthDate": "2026-05-07",
+      "gender": "Male",
+      "fatherId": "",
+      "motherId": ""
+    }
+  ]
+}

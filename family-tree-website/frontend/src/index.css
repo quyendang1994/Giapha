@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  
+  --color-heritage-red: #b35a5a;
+  --color-heritage-darkRed: #8b1a1a;
+  --color-heritage-gold: #d4af37;
+  --color-heritage-darkGold: #b8860b;
+  --color-heritage-cream: #fdf5e6;
+  --color-heritage-brown: #4a3728;
+  --color-heritage-lightBrown: #8b7355;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-heritage-cream text-heritage-brown;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+.btn-primary {
+  @apply bg-heritage-red text-white px-4 py-2 rounded-lg hover:bg-heritage-darkRed transition-colors;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-heritage-lightBrown/20;
+}
+
+.input-field {
+  @apply border border-heritage-lightBrown/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-heritage-gold/50 focus:border-heritage-gold outline-none transition-all;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-heritage-gold);
+  border-radius: 3px;
+}

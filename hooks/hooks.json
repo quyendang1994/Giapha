@@ -242,7 +242,7 @@
           }
         ],
         "description": "Inject agent warnings on context exhaustion, high cost, scope creep, or tool loops",
-        "id": "post:ecc-context-monitor"
+        "id": ["post:ecc-context-monitor"]
       }
     ],
     "PostToolUseFailure": [
