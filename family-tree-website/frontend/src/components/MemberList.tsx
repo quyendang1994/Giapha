@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Member } from '../services/api';
 import MemberModal from './MemberModal';
+import { useAuth } from '../context/AuthContext';
 
 const MemberList: React.FC = () => {
+  const { user } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
@@ -37,12 +39,14 @@ const MemberList: React.FC = () => {
     <div className="card">
       <div className="p-6 border-b border-heritage-lightBrown/20 flex justify-between items-center bg-white/50">
         <h2 className="text-2xl font-bold text-heritage-red">Danh sách thành viên</h2>
-        <button 
-          onClick={handleAddMember}
-          className="btn-primary"
-        >
-          + Thêm thành viên
-        </button>
+        {user?.role === 'admin' && (
+          <button 
+            onClick={handleAddMember}
+            className="btn-primary"
+          >
+            + Thêm thành viên
+          </button>
+        )}
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-heritage-lightBrown/20">
@@ -67,18 +71,22 @@ const MemberList: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-heritage-brown">{member.birthDate}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button 
-                    onClick={() => handleEditMember(member)}
-                    className="text-heritage-gold hover:text-heritage-darkGold mr-4 transition-colors"
-                  >
-                    Sửa
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteMember(member.id || '')}
-                    className="text-heritage-red hover:text-heritage-darkRed transition-colors"
-                  >
-                    Xóa
-                  </button>
+                  {user?.role === 'admin' && (
+                    <>
+                      <button 
+                        onClick={() => handleEditMember(member)}
+                        className="text-heritage-gold hover:text-heritage-darkGold mr-4 transition-colors"
+                      >
+                        Sửa
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteMember(member.id || '')}
+                        className="text-heritage-red hover:text-heritage-darkRed transition-colors"
+                      >
+                        Xóa
+                      </button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
