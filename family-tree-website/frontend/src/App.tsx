@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import MemberList from './components/MemberList';
 import FamilyTree from './components/FamilyTree';
 import ContentManager from './components/ContentManager';
+import AccountPage from './components/AccountPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('members');
@@ -21,12 +22,8 @@ function App() {
         return <ContentManager title="Sự kiện" type="events" />;
       case 'library':
         return <ContentManager title="Thư viện" type="albums" />;
-      default:
-        return (
-          <div className="flex items-center justify-center h-64 text-gray-500">
-            Tính năng này đang được phát triển...
-          </div>
-        );
+      case 'account':
+        return <AccountPage />;
     }
   };
 

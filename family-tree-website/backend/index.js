@@ -12,10 +12,11 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'family-tree-dev-session-secret';
 
 app.use(cors());
 app.use(express.json());
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
+app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -26,32 +27,49 @@ const db = await JSONFilePreset('db.json', defaultData);
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
-}, (accessToken, refreshToken, profile, done) => {
-  return done(null, profile);
-}));
+// Initialize Google OAuth strategy if credentials are available
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/auth/google/callback"
+  }, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+  }));
 
-passport.use(new FacebookStrategy({
-  clientID: process.env.FACEBOOK_APP_ID,
-  clientSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackURL: "/auth/facebook/callback"
-}, (accessToken, refreshToken, profile, done) => {
-  return done(null, profile);
-}));
+  app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+  app.get('/auth/google/callback', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' }));
+}
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-app.get('/auth/google/callback', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' }));
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
+// Initialize Facebook OAuth strategy if credentials are available
+if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  passport.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: "/auth/facebook/callback"
+  }, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+  }));
+
+  app.get('/auth/facebook', passport.authenticate('facebook'));
+  app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
+}
 app.get('/auth/logout', (req, res) => { req.logout(() => res.redirect('/')); });
 app.get('/api/user', (req, res) => res.json(req.user || null));
 
 const isAdmin = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.role === 'admin') return next();
-  res.status(403).json({ message: 'Forbidden' });
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  // Lấy email từ profile của Passport (Google/Facebook thường lưu trong mảng emails)
+  const userEmail = req.user.emails?.[0]?.value || req.user.email;
+  
+  if (userEmail === process.env.ADMIN_EMAIL) {
+    return next();
+  }
+  
+  res.status(403).json({ message: 'Forbidden: You do not have admin privileges' });
 };
 
 // GET all members

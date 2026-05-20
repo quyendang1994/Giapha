@@ -56,9 +56,12 @@ const Layout: React.FC<{
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                     <div className="flex justify-between px-4 pt-4">
-                      <a href="/account" className="flex items-center bg-teal-700 text-white px-4 py-2 rounded text-sm hover:bg-teal-800">
+                      <button 
+                        onClick={() => setActiveTab('account')}
+                        className="flex items-center bg-teal-700 text-white px-4 py-2 rounded text-sm hover:bg-teal-800"
+                      >
                         <span className="mr-2">👤</span> Tài khoản
-                      </a>
+                      </button>
                       <button 
                         onClick={signOut}
                         className="flex items-center bg-slate-600 text-white px-4 py-2 rounded text-sm hover:bg-slate-700"
