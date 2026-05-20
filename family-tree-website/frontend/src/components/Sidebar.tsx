@@ -23,7 +23,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, active, onClick 
 
 const Sidebar: React.FC<{ activeTab: string; setActiveTab: (tab: string) => void }> = ({ activeTab, setActiveTab }) => {
   return (
-    <div className="w-64 h-screen bg-heritage-red text-heritage-cream flex flex-col shadow-2xl">
+    <div className="w-64 flex-shrink-0 h-screen bg-heritage-red text-heritage-cream flex flex-col shadow-2xl">
       <div className="p-8 text-center border-b border-heritage-darkRed">
         <div className="w-24 h-24 mx-auto bg-heritage-gold rounded-full border-4 border-heritage-cream/30 flex items-center justify-center overflow-hidden shadow-lg mb-4">
           <span className="text-4xl font-serif font-bold text-heritage-darkRed">GP</span>
