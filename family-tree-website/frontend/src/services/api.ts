@@ -1,9 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from './supabaseClient';
 
 export interface Member {
   id?: string;
@@ -16,6 +11,22 @@ export interface Member {
   motherId?: string;
   bio?: string;
   photoUrl?: string;
+  order?: string;
+  address?: string;
+  phone?: string;
+  maritalStatus?: string;
+  education?: string;
+  bloodType?: string;
+}
+
+export interface Marriage {
+  id?: string;
+  husbandId: string;
+  wifeId: string;
+  order?: number;
+  status?: 'engaged' | 'married' | 'divorced' | 'widowed';
+  startDate?: string;
+  endDate?: string;
 }
 
 export const api = {
@@ -41,6 +52,21 @@ export const api = {
   },
   deleteMember: async (id: string): Promise<void> => {
     const { error } = await supabase.from('members').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  getMarriages: async (): Promise<Marriage[]> => {
+    const { data, error } = await supabase.from('marriages').select('*');
+    if (error) throw error;
+    return data as Marriage[];
+  },
+  createMarriage: async (marriage: Marriage): Promise<Marriage> => {
+    const { data, error } = await supabase.from('marriages').insert([marriage]).select().single();
+    if (error) throw error;
+    return data as Marriage;
+  },
+  deleteMarriage: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('marriages').delete().eq('id', id);
     if (error) throw error;
   },
 };
