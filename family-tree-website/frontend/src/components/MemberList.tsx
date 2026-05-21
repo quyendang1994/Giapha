@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { api, type Member } from '../services/api';
 import MemberModal from './MemberModal';
 import { useAuth } from '../context/AuthContext';
+
+const PAGE_SIZE = 17;
 
 const MemberList: React.FC = () => {
   const { user } = useAuth();
@@ -10,6 +12,8 @@ const MemberList: React.FC = () => {
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchMembers();
@@ -72,6 +76,23 @@ const MemberList: React.FC = () => {
     return searchableText.includes(keyword);
   });
 
+  // reset về trang 1 khi đổi từ khóa tìm kiếm
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / PAGE_SIZE));
+
+  useEffect(() => {
+    // đảm bảo page luôn hợp lệ khi filteredMembers thay đổi
+    setPage((prev) => Math.min(Math.max(1, prev), totalPages));
+  }, [totalPages]);
+
+  const pagedMembers = useMemo(() => {
+    const startIndex = (page - 1) * PAGE_SIZE;
+    return filteredMembers.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filteredMembers, page]);
+
   const handleDeleteMember = async (id: string) => {
     const hasChildren = members.some((member) => member.fatherId === id || member.motherId === id);
     if (hasChildren) {
@@ -128,6 +149,48 @@ const MemberList: React.FC = () => {
             Hiển thị {filteredMembers.length}/{members.length} thành viên
           </div>
         </div>
+
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="text-sm text-heritage-lightBrown">
+            Trang <span className="font-semibold text-heritage-brown">{page}</span> / {totalPages} — {PAGE_SIZE} bản ghi/trang
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="px-3 py-1.5 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-heritage-cream/50"
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+            >
+              « Đầu
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1.5 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-heritage-cream/50"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              ‹ Trước
+            </button>
+
+            <button
+              type="button"
+              className="px-3 py-1.5 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-heritage-cream/50"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              Sau ›
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1.5 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-heritage-cream/50"
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+            >
+              Cuối »
+            </button>
+          </div>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-heritage-lightBrown/20">
@@ -141,14 +204,16 @@ const MemberList: React.FC = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-heritage-lightBrown/10">
-            {filteredMembers.map((member, index) => (
+            {pagedMembers.map((member, index) => (
               <tr
                 key={member.id}
                 className="hover:bg-heritage-cream/50 transition-colors cursor-pointer"
                 onClick={() => setSelectedMember(member)}
                 title="Bấm để xem thông tin chi tiết"
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-heritage-lightBrown">{index + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-heritage-lightBrown">
+                  {(page - 1) * PAGE_SIZE + index + 1}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-heritage-brown">{member.firstName} {member.lastName}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-heritage-brown">
                   <span className={`px-2 py-1 rounded-full text-xs ${member.gender === 'Male' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'}`}>
